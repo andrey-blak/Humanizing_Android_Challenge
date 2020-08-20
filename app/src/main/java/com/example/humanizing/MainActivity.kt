@@ -12,14 +12,17 @@ import com.aldebaran.qi.sdk.builder.ChatBuilder
 import com.aldebaran.qi.sdk.builder.QiChatbotBuilder
 import com.aldebaran.qi.sdk.builder.TopicBuilder
 import com.aldebaran.qi.sdk.design.activity.RobotActivity
+import com.example.humanizing.databinding.ActivityMainBinding
 
 class MainActivity : RobotActivity() {
 
 	private lateinit var robotLifecycleCallbacks: RobotLifecycleCallbacks
+	private lateinit var viewBinding: ActivityMainBinding
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_main)
+		viewBinding = ActivityMainBinding.inflate(layoutInflater)
+		setContentView(viewBinding.root)
 		registerRobotCallback()
 	}
 
