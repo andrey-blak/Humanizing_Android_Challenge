@@ -4,4 +4,5 @@
 	<!-- Main -->
 	<string name="button_a">A</string>
 	<string name="button_b">B</string>
+	<string name="error">An error occurred. Please see the logcat for details. </string>
 </resources>

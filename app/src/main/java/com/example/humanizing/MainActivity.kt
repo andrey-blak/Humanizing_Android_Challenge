@@ -2,6 +2,7 @@ package com.example.humanizing
 
 import android.os.Bundle
 import android.util.Log
+import androidx.lifecycle.lifecycleScope
 import com.aldebaran.qi.sdk.QiContext
 import com.aldebaran.qi.sdk.QiSDK
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks
@@ -17,6 +18,10 @@ import com.aldebaran.qi.sdk.builder.QiChatbotBuilder
 import com.aldebaran.qi.sdk.builder.TopicBuilder
 import com.aldebaran.qi.sdk.design.activity.RobotActivity
 import com.example.humanizing.databinding.ActivityMainBinding
+import com.example.jokes.JokesDataSource
+import com.example.jokes.dto.Joke
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
 
 class MainActivity : RobotActivity() {
 
@@ -41,7 +46,7 @@ class MainActivity : RobotActivity() {
 		robotLifecycleCallbacks = object : RobotLifecycleCallbacks {
 			override fun onRobotFocusGained(qiContext: QiContext) {
 				startChatBot(qiContext)
-				initListeners(qiContext)
+				viewBinding.initListeners(qiContext)
 			}
 
 			override fun onRobotFocusLost() {
@@ -57,9 +62,12 @@ class MainActivity : RobotActivity() {
 		QiSDK.unregister(this, robotLifecycleCallbacks)
 	}
 
-	private fun initListeners(qiContext: QiContext) {
-		viewBinding.buttonA.setOnClickListener {
+	private fun ActivityMainBinding.initListeners(qiContext: QiContext) {
+		buttonA.setOnClickListener {
 			startBowAnimation(qiContext)
+		}
+		buttonB.setOnClickListener {
+			getJoke()
 		}
 	}
 
@@ -109,6 +117,20 @@ class MainActivity : RobotActivity() {
 	}
 
 	/**
+	 * Requests a joke and shows it's content.
+	 */
+	private fun getJoke() {
+		val exceptionHandler = CoroutineExceptionHandler { _, e ->
+			showError()
+		}
+		lifecycleScope.launch(exceptionHandler) {
+			val jokesSource = JokesDataSource()
+			val joke = jokesSource.getJoke()
+			showJoke(joke)
+		}
+	}
+
+	/**
 	 * Shows the message bookmarked as "welcoming".
 	 */
 	private fun showWelcomingMessage() {
@@ -136,6 +158,26 @@ class MainActivity : RobotActivity() {
 	 */
 	private fun goToBookmark(bookmark: Bookmark?) {
 		chatbot?.async()?.goToBookmark(bookmark, AutonomousReactionImportance.HIGH, AutonomousReactionValidity.IMMEDIATE)
+	}
+
+	/**
+	 * Shows the [joke]'s content if it's not null, an error message otherwise.
+	 */
+	private fun showJoke(joke: Joke?) {
+		if (joke == null) {
+			showError()
+			return
+		}
+
+		val message = joke.content
+		viewBinding.jokeEditText.setText(message)
+	}
+
+	/**
+	 * Shows the default error message.
+	 */
+	private fun showError() {
+		viewBinding.jokeEditText.setText(R.string.error)
 	}
 
 	companion object {
