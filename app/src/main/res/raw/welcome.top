@@ -2,5 +2,7 @@ topic: ~welcome()
 
 proposal: %welcoming The robot focus is gained
 
+proposal: %goodbye It was a pleasure!
+
 u:(Hello Pepper)
 Hello human
