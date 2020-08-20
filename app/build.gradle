@@ -1,6 +1,16 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'org.jetbrains.dokka'
+
+dokka {
+	outputFormat = 'html'
+	outputDirectory = "$buildDir/dokka"
+
+	configuration {
+		includeNonPublic = true
+	}
+}
 
 android {
 	compileSdkVersion 29
